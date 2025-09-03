@@ -1,401 +1,143 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Notebook — Creative Study Notes</title>
-  <meta name="description" content="Creative study notes website with glass cards, search, carousel and dark mode." />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes-Giver</title>
   <style>
-    :root{
-      --bg:#0f1724; --card-bg: rgba(255,255,255,0.06); --glass: rgba(255,255,255,0.06);
-      --muted: #94a3b8; --accent: #6ee7b7; --accent-2:#60a5fa; --glass-border: rgba(255,255,255,0.08);
-      --maxw:1100px;
-      --glass-blur:8px;
-    }
-    :root.light{
-      --bg:#f6f7fb; --card-bg: rgba(255,255,255,0.65); --glass: rgba(255,255,255,0.6);
-      --muted:#475569; --accent:#06b6d4; --accent-2:#2563eb; --glass-border: rgba(0,0,0,0.06);
-      --glass-blur:10px;
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:white;background:linear-gradient(180deg,#071029 0%, #07172a 60%);-webkit-font-smoothing:antialiased}
-    body{display:flex;justify-content:center;padding:36px 18px;transition:background 0.3s ease}
-    .wrap{width:100%;max-width:var(--maxw);}
-
-    /* Header */
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;font-weight:800;color:#052036;box-shadow:0 8px 20px rgba(8,12,20,0.6)}
-    h1.site-title{font-size:18px;margin:0}
-    p.tag{margin:0;color:var(--muted);font-size:13px}
-
-    nav{display:flex;gap:12px;align-items:center}
-    .nav-link{color:var(--muted);text-decoration:none;font-weight:600;padding:6px 10px;border-radius:8px}
-    .nav-link:hover{color:white;background:rgba(255,255,255,0.03)}
-
-    /* Hero */
-    .hero{display:grid;grid-template-columns:1fr;gap:18px;margin-bottom:22px}
-    @media(min-width:950px){.hero{grid-template-columns:1fr 380px;align-items:start}}
-    .glass{
-      background:var(--card-bg);
-      border:1px solid var(--glass-border);
-      backdrop-filter: blur(var(--glass-blur));
-      -webkit-backdrop-filter: blur(var(--glass-blur));
-      padding:18px;border-radius:14px;box-shadow:0 6px 30px rgba(2,6,23,0.6);
-    }
-    .hero-left .headline{font-size:24px;font-weight:800;margin:0 0 8px}
-    .hero-left .lead{color:var(--muted);margin:0 0 14px}
-
-    /* Search */
-    .search-row{display:flex;gap:10px;align-items:center}
-    .search{flex:1;padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    /* button */
-    .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#02212a;text-decoration:none;padding:10px 12px;border-radius:12px;border:0;font-weight:700;cursor:pointer}
-    .small{font-size:13px;color:var(--muted)}
-
-    /* Chips */
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-    .chip{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);color:var(--muted);cursor:pointer;font-weight:600}
-    .chip.active{background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));color:white;border-color:rgba(255,255,255,0.06)}
-
-    /* grid cards */
-    .grid{display:grid;grid-template-columns:repeat(1,1fr);gap:14px;margin-top:18px}
-    @media(min-width:640px){.grid{grid-template-columns:repeat(2,1fr)}}
-    @media(min-width:1000px){.grid{grid-template-columns:repeat(3,1fr)}}
-
-    .subject{
-      position:relative;overflow:hidden;border-radius:14px;padding:18px;height:160px;cursor:pointer;
-      transition:transform 0.25s cubic-bezier(.2,.9,.3,1),box-shadow 0.25s;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border:1px solid rgba(255,255,255,0.04);
-      display:flex;flex-direction:column;justify-content:space-between;
-    }
-    .subject:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 18px 40px rgba(2,6,23,0.6)}
-    .subject .sub-title{font-weight:800;font-size:16px}
-    .subject .sub-desc{color:var(--muted);font-size:13px}
-    .subject .tag-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-
-    /* subtle accent shapes */
-    .accent-shape{position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;filter:blur(36px);opacity:0.14;transform:rotate(15deg)}
-    .accent-1{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
-
-    /* carousel */
-    .carousel{position:relative;margin-top:6px;overflow:hidden;border-radius:12px}
-    .slides{display:flex;transition:transform 0.6s cubic-bezier(.22,.99,.3,1)}
-    .slide{min-width:100%;padding:18px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.04);border-radius:12px}
-    .slide h3{margin:0 0 8px}
-    .dots{display:flex;gap:8px;justify-content:center;margin-top:12px}
-    .dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.06);cursor:pointer}
-    .dot.active{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
-
-    /* blog list */
-    .blog-list{display:grid;gap:12px;margin-top:12px}
-    .blog-card{display:flex;gap:12px;align-items:center;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
-    .meta{font-size:13px;color:var(--muted)}
-
-    /* footer */
-    footer{margin-top:26px;text-align:center;color:var(--muted);font-size:13px}
-
-    /* dark mode toggle */
-    .toggle{width:48px;height:28px;border-radius:999px;background:rgba(255,255,255,0.04);display:flex;align-items:center;padding:4px;cursor:pointer}
-    .knob{width:20px;height:20px;border-radius:50%;background:white;transform:translateX(0);transition:transform 0.25s}
-    .light .knob{transform:translateX(20px);background:#052036}
-
-    /* Light theme adjustments */
-    body.light{background:linear-gradient(180deg,#f6f8fb 0%, #eaf0ff 60%);color:#012036}
-    body.light .nav-link{color:#234}
-    body.light .logo{box-shadow:0 12px 30px rgba(9,14,24,0.06)}
-    body.light .chip{background:rgba(2,6,23,0.02);color:#123}
-    /* small screens padding tweak */
-    @media(max-width:520px){
-      .hero-left .headline{font-size:20px}
-      .logo{width:46px;height:46px}
-    }
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif;}
+    body{background:#f4f6f9;color:#333;transition:background 0.3s,color 0.3s;}
+    header{background:#2d89ef;color:#fff;padding:15px 20px;text-align:center;position:sticky;top:0;z-index:10;}
+    nav{margin-top:10px;}
+    nav a{margin:0 10px;color:white;text-decoration:none;font-weight:bold;}
+    nav a:hover{text-decoration:underline;}
+    .hero{padding:50px 20px;text-align:center;background:linear-gradient(135deg,#2d89ef,#1e5bbf);color:white;}
+    .hero h1{font-size:2.5em;margin-bottom:10px;}
+    .hero input{padding:10px;width:60%;max-width:400px;border:none;border-radius:5px;}
+    .section{padding:40px 20px;max-width:1000px;margin:auto;}
+    .section h2{text-align:center;color:#2d89ef;margin-bottom:20px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
+    .card{background:white;padding:20px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,0.1);text-align:center;transition:transform 0.3s;}
+    .card:hover{transform:scale(1.05);}
+    .card h3{margin-bottom:10px;}
+    .btn{display:inline-block;margin-top:10px;padding:10px 15px;background:#2d89ef;color:white;border-radius:5px;text-decoration:none;}
+    .btn:hover{background:#1e5bbf;}
+    footer{text-align:center;padding:20px;background:#2d89ef;color:white;margin-top:40px;}
+    /* Dark Mode */
+    body.dark{background:#1e1e1e;color:#f4f4f4;}
+    body.dark .card{background:#2a2a2a;color:#fff;}
+    body.dark header, body.dark footer{background:#111;}
+    body.dark .btn{background:#444;}
+    .toggle-btn{position:absolute;right:20px;top:20px;background:#fff;color:#2d89ef;border:none;padding:8px 12px;border-radius:5px;cursor:pointer;font-weight:bold;}
+    body.dark .toggle-btn{background:#444;color:#fff;}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <div class="logo">NB</div>
-        <div>
-          <h1 class="site-title">Notebook</h1>
-          <p class="tag">Creative notes & study tools for students</p>
-        </div>
-      </div>
+<header>
+  <h1>📘 Note-Giver</h1>
+  <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Mode</button>
+  <nav>
+    <a href="#subjects">Subjects</a>
+    <a href="#tips">Tips</a>
+    <a href="#notes">Notes</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
 
-      <nav aria-label="Main navigation">
-        <a class="nav-link" href="#subjects">Subjects</a>
-        <a class="nav-link" href="#tips">Tips</a>
-        <a class="nav-link" href="#notes">Notes</a>
-        <div style="width:12px"></div>
-        <div id="themeToggle" class="toggle" role="button" aria-pressed="false" tabindex="0" title="Toggle light/dark">
-          <div class="knob"></div>
-        </div>
-      </nav>
-    </header>
+<section class="hero">
+  <h1>Find Your Study Notes</h1>
+  <p>Search and explore notes for your exams</p>
+  <input type="text" placeholder="Search notes...">
+</section>
 
-    <main>
-      <section class="hero" aria-labelledby="heroTitle">
-        <div class="glass hero-left">
-          <h2 id="heroTitle" class="headline">Find Your Study Notes — Fast</h2>
-          <p class="lead">Search subject-wise notes, quick tips and downloadable PDFs. Built for students who want speed & clarity.</p>
-
-          <div class="search-row" role="search" aria-label="Search notes">
-            <input id="search" class="search" placeholder="Search subjects, e.g. 'calculus', 'thermodynamics', 'mcq'">
-            <button id="searchBtn" class="btn" aria-label="Search button">Search</button>
-          </div>
-
-          <div class="chips" id="chips" aria-hidden="false" role="toolbar" aria-label="Filter subjects">
-            <!-- JS renders chips -->
-          </div>
-
-          <p class="small" style="margin-top:10px">Tip: Use filters like <code>Physics</code>, <code>Formulas</code>, <code>MCQ</code> to narrow results.</p>
-        </div>
-
-        <aside class="glass" aria-labelledby="quickTitle">
-          <h3 id="quickTitle" style="margin:0 0 6px 0">Quick Picks</h3>
-          <p class="small">Download ready-made notes or read short revision posts.</p>
-
-          <div style="height:10px"></div>
-          <div class="carousel" aria-roledescription="carousel" aria-label="Featured tips">
-            <div class="slides" id="slides">
-              <div class="slide">
-                <h3>How to convert notes into flashcards</h3>
-                <p class="meta">3 min read • Practical workflow</p>
-              </div>
-              <div class="slide">
-                <h3>Best apps for handwritten notes</h3>
-                <p class="meta">2 min read • Tablet & phone tips</p>
-              </div>
-              <div class="slide">
-                <h3>Exam day checklist</h3>
-                <p class="meta">1 min read • Carry these essentials</p>
-              </div>
-            </div>
-            <div class="dots" id="dots" aria-hidden="true"></div>
-          </div>
-        </aside>
-      </section>
-
-      <section id="subjects" style="margin-top:18px">
-        <h2 style="margin:6px 0 8px 0;color:var(--accent)">Subjects</h2>
-        <div class="grid" id="subjectsGrid" aria-live="polite">
-          <!-- JS will inject subject cards -->
-        </div>
-      </section>
-
-      <section id="tips" style="margin-top:22px">
-        <h2 style="margin:6px 0 8px 0;color:var(--accent)">Study Tips</h2>
-        <div class="blog-list" id="blogList">
-          <!-- JS injects short blog cards -->
-        </div>
-      </section>
-
-      <section id="notes" style="margin-top:22px">
-        <h2 style="margin:6px 0 8px 0;color:var(--accent)">Downloadable Notes</h2>
-        <div class="grid" id="notesGrid">
-          <!-- sample note cards -->
-        </div>
-      </section>
-
-      <footer style="margin-top:26px">
-        <p>© <span id="year"></span> Notebook — Built by you • Use & customize freely</p>
-      </footer>
-    </main>
+<!-- Subjects Section -->
+<section id="subjects" class="section">
+  <h2>📂 Subjects</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Maths Notes</h3>
+      <p>Algebra, Calculus, Geometry and more.</p>
+      <a href="ViewPdfPage1 (1).pdf" class="btn" download>📥 Download PDF</a>
+    </div>
+    <div class="card">
+      <h3>Physics Notes</h3>
+      <p>Mechanics, Optics, Thermodynamics etc.</p>
+      <a href="pdfs/physics.pdf" class="btn" download>📥 Download PDF</a>
+    </div>
+    <div class="card">
+      <h3>Chemistry Notes</h3>
+      <p>Organic, Inorganic and Physical Chemistry.</p>
+      <a href="pdfs/chemistry.pdf" class="btn" download>📥 Download PDF</a>
+    </div>
+    <div class="card">
+      <h3>General Knowledge</h3>
+      <p>GK notes for competitive exams.</p>
+      <a href="pdfs/gk.pdf" class="btn" download>📥 Download PDF</a>
+    </div>
   </div>
+</section>
 
-  <script>
-    // --- Data (editable) ---
-const SUBJECTS = [
-  {id:'math', title:'Mathematics', desc:'Algebra, Calculus, Coordinate Geometry, Trigonometry', tags:['Formulas','Problems','MCQ'], color: '#7ce4c9', file:'pdfs/maths.pdf'},
-  {id:'phy', title:'Physics', desc:'Mechanics, Electricity, Optics, Thermodynamics', tags:['Derivations','Numericals'], color: '#8fb6ff', file:'pdfs/physics.pdf'},
-  {id:'chem', title:'Chemistry', desc:'Organic, Inorganic, Physical Chemistry', tags:['Reactions','Equations'], color: '#ffb86b', file:'pdfs/chemistry.pdf'},
-  {id:'bio', title:'Biology', desc:'Botany, Zoology, Human Biology', tags:['Diagrams','Definitions'], color: '#f78fb3', file:'pdfs/biology.pdf'},
-  {id:'gk', title:'General Knowledge', desc:'Current Affairs, World Facts, MCQs', tags:['Current','MCQ'], color: '#d7b7ff', file:'pdfs/gk.pdf'},
-  {id:'cs', title:'Computer Science', desc:'Programming, Data Structures, DBMS', tags:['Code','Projects'], color: '#9ee7a6', file:'pdfs/cs.pdf'},
-];
-    const BLOGS = [
-      {title:'Time management during exams','meta':'5 min read','excerpt':'Make a simple weekly plan, use 25/5 technique and revise actively.'},
-      {title:'Convert notes to flashcards','meta':'3 min read','excerpt':'Extract Q/A pairs and use spaced repetition apps.'},
-      {title:'How to make revision timetables','meta':'4 min read','excerpt':'Plan backward from exam date and schedule daily micro-goals.'},
-    ];
+<!-- Study Tips Section -->
+<section id="tips" class="section">
+  <h2>📝 Study Tips</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>Time Management</h3>
+      <p>Learn how to manage your study schedule effectively.</p>
+      <a href="blog/time-management.html" class="btn">Read More</a>
+    </div>
+    <div class="card">
+      <h3>Top Learning Apps</h3>
+      <p>Boost your learning with free educational apps.</p>
+      <a href="blog/top-apps.html" class="btn">Read More</a>
+    </div>
+    <div class="card">
+      <h3>Stay Motivated</h3>
+      <p>Simple tips to keep you motivated while studying.</p>
+      <a href="blog/motivation.html" class="btn">Read More</a>
+    </div>
+  </div>
+</section>
 
-    const NOTES = [
-  {title:'Math Formulas — Quick Sheet', file:'pdfs/math-formulas.pdf', desc:'One page formula list for quick revision'},
-  {title:'Physics Important Laws', file:'pdfs/physics-laws.pdf', desc:'Key laws and derivations summarized'},
-  {title:'Organic Chemistry Reactions', file:'pdfs/organic-chem.pdf', desc:'Common reaction mechanism cheat sheet'},
-];
+<!-- Downloadable Notes Section -->
+<section id="notes" class="section">
+  <h2>📘 Download Notes</h2>
+  <div class="grid">
+    <div class="card">
+      <h3>JEE Preparation</h3>
+      <p>Download JEE exam notes and guides.</p>
+      <a href="pdfs/jee.pdf" class="btn" download>📥 Download</a>
+    </div>
+    <div class="card">
+      <h3>NEET Preparation</h3>
+      <p>Download NEET exam notes and guides.</p>
+      <a href="pdfs/neet.pdf" class="btn" download>📥 Download</a>
+    </div>
+    <div class="card">
+      <h3>SSC Preparation</h3>
+      <p>Download SSC exam notes and guides.</p>
+      <a href="pdfs/ssc.pdf" class="btn" download>📥 Download</a>
+    </div>
+  </div>
+</section>
 
-    // --- Helpers to create elements
-    function el(tag, attrs={}, children=[]) {
-      const e = document.createElement(tag);
-      for(const k in attrs) {
-        if(k==='style') e.style.cssText = attrs[k];
-        else if(k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
-        else e.setAttribute(k, attrs[k]);
-      }
-      (Array.isArray(children)?children:[children]).forEach(c=>{
-        if(c==null) return;
-        if(typeof c==='string') e.appendChild(document.createTextNode(c));
-        else e.appendChild(c);
-      });
-      return e;
-    }
+<!-- Contact Section -->
+<section id="contact" class="section">
+  <h2>📞 Contact</h2>
+  <p style="text-align:center;">For queries or contributions, email: <b>youremail@example.com</b></p>
+</section>
 
-    // --- Render chips
-    const chipsBox = document.getElementById('chips');
-    let activeFilter = 'All';
-    const chipList = ['All', ...new Set(SUBJECTS.flatMap(s=>s.tags).concat(SUBJECTS.map(s=>s.title)))];
+<footer>
+  <p>© <span id="year"></span> Creative Study Notes | Made with ❤️ by You</p>
+</footer>
 
-    function renderChips(){
-      chipsBox.innerHTML = '';
-      chipList.forEach(ch=>{
-        const b = el('button',{class:'chip'+(ch===activeFilter? ' active':''), onclick:()=>{activeFilter = ch; renderChips(); renderSubjects();}}, ch);
-        chipsBox.appendChild(b);
-      });
-    }
-
-    // --- Render subject cards with tilt effect
-    const subjectsGrid = document.getElementById('subjectsGrid');
-    function renderSubjects(){
-      subjectsGrid.innerHTML = '';
-      const q = document.getElementById('search').value.trim().toLowerCase();
-      const visible = SUBJECTS.filter(s=>{
-        if(activeFilter!=='All'){
-          if(s.title.toLowerCase()===activeFilter.toLowerCase()) return true;
-          if(s.tags.map(t=>t.toLowerCase()).includes(activeFilter.toLowerCase())) return true;
-        }
-        if(!q) return true;
-        return (s.title + ' ' + s.desc + ' ' + s.tags.join(' ')).toLowerCase().includes(q);
-      });
-      visible.forEach(s=>{
-        const card = el('div',{class:'subject', tabindex:0, 'aria-label': s.title, style:`background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));`}, [
-          el('div',{}, [
-            el('div',{class:'sub-title'}, s.title),
-            el('div',{class:'sub-desc'}, s.desc)
-          ]),
-          el('div',{class:'tag-row'}, [
-            ...s.tags.map(t=> el('span',{style:'font-size:12px;color:var(--muted);padding:6px 8px;border-radius:8px;background:rgba(255,255,255,0.02);'}, t)),
-            el('div',{style:'flex:1'}),
-            el('a',{class:'btn', href:s.file, download:'', target:'_blank'}, 'Download')
-          ])
-        ]);
-        // accent shape
-        const accent = el('div',{class:'accent-shape accent-1', style:`background:linear-gradient(90deg, ${s.color}, rgba(255,255,255,0.02)); right:-30px; top:-30px;`});
-        card.appendChild(accent);
-
-        // tilt / pointer follow effect
-        card.addEventListener('mousemove', (ev)=>{
-          const rect = card.getBoundingClientRect();
-          const x = (ev.clientX - rect.left) / rect.width - 0.5;
-          const y = (ev.clientY - rect.top) / rect.height - 0.5;
-          card.style.transform = `perspective(900px) rotateX(${(-y*6).toFixed(2)}deg) rotateY(${(x*8).toFixed(2)}deg) translateZ(0) scale(1.02)`;
-        });
-        card.addEventListener('mouseleave', ()=> card.style.transform = '');
-        card.addEventListener('focus', ()=> card.style.boxShadow = '0 18px 36px rgba(2,6,23,0.6)');
-        card.addEventListener('blur', ()=> card.style.boxShadow = '');
-
-        subjectsGrid.appendChild(card);
-      });
-      if(visible.length===0){
-        subjectsGrid.appendChild(el('div',{}, 'No results found.'));
-      }
-    }
-
-    // --- Render blog list
-    const blogList = document.getElementById('blogList');
-    function renderBlogs(){
-      blogList.innerHTML = '';
-      BLOGS.forEach(b=>{
-        const bc = el('div',{class:'blog-card'}, [
-          el('div', {style:'width:8px;height:8px;border-radius:3px;background:var(--accent);flex:0 0 8px;'}),
-          el('div', {}, [
-            el('div',{style:'font-weight:700'}, b.title),
-            el('div',{class:'meta'}, b.meta),
-            el('div',{style:'font-size:13px;color:var(--muted);margin-top:6px'}, b.excerpt)
-          ])
-        ]);
-        blogList.appendChild(bc);
-      });
-    }
-
-    // --- Notes grid
-    const notesGrid = document.getElementById('notesGrid');
-    function renderNotes(){
-      notesGrid.innerHTML = '';
-      NOTES.forEach(n=>{
-        const c = el('div',{class:'card'}, [
-          el('h3',{}, n.title),
-          el('p',{}, n.desc),
-          el('div',{}, el('a',{class:'btn', href:n.file, onclick:(e)=>{ if(n.file==='#'){ e.preventDefault(); alert('PDF placeholder. Add actual file link.'); } }}, 'Download PDF'))
-        ]);
-        notesGrid.appendChild(c);
-      });
-    }
-
-    // --- Carousel logic
-    const slidesEl = document.getElementById('slides');
-    const dotsEl = document.getElementById('dots');
-    let slideIndex=0, slideTimer=null;
-    function setupCarousel(){
-      dotsEl.innerHTML = '';
-      const slides = slidesEl.children;
-      for(let i=0;i<slides.length;i++){
-        const dot = el('div',{class:'dot'+(i===0? ' active':''), onclick:()=>{ goToSlide(i); }});
-        dotsEl.appendChild(dot);
-      }
-      startAuto();
-      slidesEl.addEventListener('mouseenter', pauseAuto);
-      slidesEl.addEventListener('mouseleave', startAuto);
-    }
-    function goToSlide(i){
-      const n = slidesEl.children.length;
-      slideIndex = ((i % n) + n) % n;
-      slidesEl.style.transform = `translateX(-${slideIndex*100}%)`;
-      Array.from(dotsEl.children).forEach((d,idx)=> d.classList.toggle('active', idx===slideIndex));
-    }
-    function nextSlide(){ goToSlide(slideIndex+1); }
-    function startAuto(){ if(slideTimer) clearInterval(slideTimer); slideTimer = setInterval(nextSlide, 4200); }
-    function pauseAuto(){ if(slideTimer) clearInterval(slideTimer); slideTimer = null; }
-
-    // --- Theme toggle
-    const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
-    function setTheme(light){
-      if(light){
-        body.classList.add('light');
-        document.documentElement.classList.add('light');
-        themeToggle.classList.add('light');
-        themeToggle.setAttribute('aria-pressed','true');
-      } else {
-        body.classList.remove('light');
-        document.documentElement.classList.remove('light');
-        themeToggle.classList.remove('light');
-        themeToggle.setAttribute('aria-pressed','false');
-      }
-      localStorage.setItem('notebook-theme', light ? 'light' : 'dark');
-    }
-    themeToggle.addEventListener('click', ()=> setTheme(!body.classList.contains('light')));
-    themeToggle.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' ') setTheme(!body.classList.contains('light')); });
-
-    // --- Search handlers
-    document.getElementById('searchBtn').addEventListener('click', ()=> renderSubjects());
-    document.getElementById('search').addEventListener('keydown', (e)=> { if(e.key==='Enter'){ e.preventDefault(); renderSubjects(); } });
-
-    // init
-    (function init(){
-      // theme
-      const saved = localStorage.getItem('notebook-theme');
-      setTheme(saved === 'light');
-
-      renderChips(); renderSubjects(); renderBlogs(); renderNotes();
-      // carousel
-      setupCarousel();
-      document.getElementById('year').textContent = new Date().getFullYear();
-    })();
-  </script>
+<script>
+  // Dark Mode Toggle
+  function toggleDarkMode(){
+    document.body.classList.toggle("dark");
+  }
+  // Auto Year Update
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 </body>
 </html>
